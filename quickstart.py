@@ -1,5 +1,4 @@
 import tensorflow as tf
-print(tf.__version__)
 
 def main():
     mnist = tf.keras.datasets.mnist
@@ -17,7 +16,18 @@ def main():
     tf.nn.softmax(predictions).numpy()
 
     loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-    print(predictions)
+    loss_fn(y_train[:1], predictions).numpy()
+    model.compile(optimizer="adam",
+                loss=loss_fn,
+                metrics=['accuracy'])
+    model.fit(x_train, y_train, epochs=5)
+    model.evaluate(x_test, y_test, verbose=2)
+
+    probability_model = tf.keras.Sequential([
+        model,
+        tf.keras.layers.Softmax()
+    ])
+    print(probability_model(x_test[:5]))
 
 main()
 
